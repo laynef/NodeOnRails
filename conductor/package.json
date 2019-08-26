@@ -1,7 +1,7 @@
 {
   "name": "rails-on-node-conductor",
   "title": "Rails On Node Conductor",
-  "version": "1.0.0-20",
+  "version": "1.0.0-21",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,6 @@
   "license": "MIT License",
   "dependencies": {
     "autoprefixer": "^9.1.0",
-    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-plugin-add-module-exports": "^0.2.1",
