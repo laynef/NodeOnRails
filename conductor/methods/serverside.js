@@ -8,20 +8,55 @@ const handleServerSide = (settings) => {
     return require('../babel')(settings)(settings);
 }
 
+const getVueServerSideStorage = async (req) => {
+    const assets = path.join(settings.context, 'app', 'assets');
+    const store = require(path.join(assets, 'state', 'store'));
+    try {
+        let state = await global.redis.getAsync(req.session.id);
+        state = !!state ? JSON.parse(state) : store();
+        return state;
+    } catch(e) {
+        return {};
+    }
+};
+
+const getReactServerSideStorage = async (req) => {
+    const assets = path.join(settings.context, 'app', 'assets');
+    const store = require(path.join(assets, 'redux', 'store'));
+    try {
+        let state = await global.redis.getAsync(req.session.id);
+        state = !!state ? JSON.parse(state) : store();
+        return state;
+    } catch(e) {
+        return {};
+    }
+};
+
+const getJsServerSideStorage = async (req) => {
+    const assets = path.join(settings.context, 'app', 'assets');
+    const store = require(path.join(assets, 'storage', 'store'));
+    try {
+        let state = await global.redis.getAsync(req.session.id);
+        state = !!state ? JSON.parse(state) : store();
+        return state;
+    } catch(e) {
+        return {};
+    }
+};
+
 const serverSideOptions = {
+
+        getServerSideStorage: getJsServerSideStorage,
 
         js: {
             serverSide: async (pageName, req) => {
                 const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
                 require('babel-register')(babelrc);
-                const assets = path.join(settings.context, 'app', 'assets', settings.jsType, 'storage', 'store');
-                const store = require(assets);
                 try {
-                    let storage = await global.redis.getAsync(req.session.id);
-                    storage = JSON.parse(storage);
-                    return { serversideStorage: JSON.stringify(store(storage)) };
+                    let storage = await getJsServerSideStorage(req);
+                    return { serversideStorage: JSON.stringify(storage) };
                 } catch (e) {
-                    return { serversideStorage: JSON.stringify(store({})) };
+                    return { serversideStorage: JSON.stringify({}) };
                 }
             },
 
@@ -37,6 +72,9 @@ const serverSideOptions = {
         },
 
         jsx: {
+
+            getServerSideStorage: getReactServerSideStorage,
+
             serverSide: async (pageName, req) => {
                 const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
                 require('babel-register')(babelrc);
@@ -82,11 +120,12 @@ const serverSideOptions = {
 
         vue: {
 
+            getServerSideStorage: getVueServerSideStorage,
+
             serverSide: async (pageName, req) => {
                 const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')));
                 require('babel-register')(babelrc);
                 const assets = path.join(settings.context, 'app', 'assets', settings.jsType);
-                const store = require(path.join(assets, 'state', 'store'));
                 const getServersideString = handleServerSide(settings)();
 
                 const assetPath = path.join(assets, pageName);
@@ -95,12 +134,11 @@ const serverSideOptions = {
                 const filePath = fileArray.join('/') + '/component.vue';
 
                 try {
-                    let state = await global.redis.getAsync(req.session.id);
-                    state = !!state ? JSON.parse(state) : store();
                     const serversideString = await getServersideString(filePath, state);
+                    const serversideStorage = await getServerSideStorage(req);
 
                     return {
-                        serversideStorage: JSON.stringify(state),
+                        serversideStorage: JSON.stringify(serversideStorage),
                         serversideString: serversideString,
                     }
                 } catch(e) {
