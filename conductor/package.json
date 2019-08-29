@@ -1,7 +1,7 @@
 {
   "name": "rails-on-node-conductor",
   "title": "Rails On Node Conductor",
-  "version": "1.0.0-33",
+  "version": "1.0.0-34",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -57,6 +57,7 @@
     "react-redux": "^7.1.0",
     "react-transform": "0.0.3",
     "redux": "^4.0.4",
+    "redux-form": "^8.2.6",
     "resolve-url-loader": "^2.3.0",
     "sass-loader": "^6.0.7",
     "style-loader": "^0.19.1",
