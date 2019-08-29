@@ -107,17 +107,20 @@ const serverSideOptions = {
                 const getServersideString = handleServerSide(settings)();
 
                 try {
-                    const serversideStorage = await getReactServerSideStorage(req);
+                    const store = await getReactServerSideStorage(req);
+                    const serversideStorage = store.getState();
 
                     return {
-                        serversideStorage: JSON.stringify(serversideStorage.getState()),
-                        serversideString: getServersideString(Application, serversideStorage),
+                        serversideStorage: JSON.stringify(serversideStorage),
+                        serversideString: getServersideString(Application, store),
                     };
                 } catch (e) {
                     const createStore = require(path.join(assets, 'redux', 'store'));
                     const store = createStore({});
+                    const data = store.getState();
+
                     return {
-                        serversideStorage: JSON.stringify(store.getState()),
+                        serversideStorage: JSON.stringify(data),
                         serversideString: getServersideString(Application, store),
                     };
                 }
