@@ -41,6 +41,11 @@ const getReactServerSideStorage = async (req) => {
     }
 };
 
+const getReactServerSideStorageState = async (req) => {
+    const store = await getReactServerSideStorage(req);
+    return store.getState();
+};
+
 const getJsServerSideStorage = async (req) => {
     const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
     require('babel-register')(babelrc);
@@ -86,7 +91,7 @@ const serverSideOptions = {
 
         jsx: {
 
-            getServerSideStorage: getReactServerSideStorage,
+            getServerSideStorage: getReactServerSideStorageState,
             setServerSideStorage: setServerSideCache,
 
             serverSide: async (pageName, req) => {
