@@ -24,7 +24,7 @@ const getVueServerSideStorage = async (req) => {
 
 const setServerSideCache = (req, data) => {
     global.redis.set(req.session.id, JSON.stringify(data));
-}
+};
 
 const getReactServerSideStorage = async (req) => {
     const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
@@ -117,10 +117,10 @@ const serverSideOptions = {
                 } catch (e) {
                     const createStore = require(path.join(assets, 'redux', 'store'));
                     const store = createStore({});
-                    const data = store.getState();
+                    const serversideStorage = store.getState();
 
                     return {
-                        serversideStorage: JSON.stringify(data),
+                        serversideStorage: JSON.stringify(serversideStorage),
                         serversideString: getServersideString(Application, store),
                     };
                 }
