@@ -15,8 +15,8 @@ const getVueServerSideStorage = async (req) => {
     const createStore = require(path.join(assets, 'state', 'store'));
     try {
         let state = await global.redis.getAsync(req.session.id);
-        state = !!state ? JSON.parse(state) : createStore({});
-        return state;
+        state = !!state ? JSON.parse(state) : {};
+        return createStore(state);
     } catch(e) {
         return createStore({});
     }
@@ -34,8 +34,8 @@ const getReactServerSideStorage = async (req) => {
 
     try {
         let state = await global.redis.getAsync(req.session.id);
-        state = !!state ? JSON.parse(state) : createStore({});
-        return state;
+        state = !!state ? JSON.parse(state) : {};
+        return createStore(state);
     } catch(e) {
         return createStore({});
     }
@@ -48,8 +48,8 @@ const getJsServerSideStorage = async (req) => {
     const createStore = require(path.join(assets, 'storage', 'store'));
     try {
         let state = await global.redis.getAsync(req.session.id);
-        state = !!state ? JSON.parse(state) : createStore({});
-        return state;
+        state = !!state ? JSON.parse(state) : {};
+        return createStore(state);
     } catch(e) {
         return createStore({});
     }
