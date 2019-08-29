@@ -18,7 +18,7 @@ const getVueServerSideStorage = async (req) => {
         state = !!state ? JSON.parse(state) : store({});
         return state;
     } catch(e) {
-        return {};
+        return store({});
     }
 };
 
@@ -37,7 +37,7 @@ const getReactServerSideStorage = async (req) => {
         state = !!state ? JSON.parse(state) : store({});
         return state;
     } catch(e) {
-        return {};
+        return store({});
     }
 };
 
@@ -51,7 +51,7 @@ const getJsServerSideStorage = async (req) => {
         state = !!state ? JSON.parse(state) : store({});
         return state;
     } catch(e) {
-        return {};
+        return store({});
     }
 };
 
@@ -106,7 +106,7 @@ const serverSideOptions = {
                     console.log(serversideStorage)
                     return {
                         serversideStorage: JSON.stringify(serversideStorage),
-                        serversideString: getServersideString(Application, store),
+                        serversideString: getServersideString(Application, serversideStorage),
                     };
                 } catch (e) {
                     const createStore = require(path.join(assets, 'redux', 'store'));
@@ -147,8 +147,8 @@ const serverSideOptions = {
                 const filePath = fileArray.join('/') + '/component.vue';
 
                 try {
-                    const serversideString = await getServersideString(filePath, state);
                     const serversideStorage = await getVueServerSideStorage(req);
+                    const serversideString = await getServersideString(filePath, serversideStorage);
 
                     return {
                         serversideStorage: JSON.stringify(serversideStorage),
