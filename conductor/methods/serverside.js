@@ -12,13 +12,13 @@ const getVueServerSideStorage = async (req) => {
     const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
     require('babel-register')(babelrc);
     const assets = path.join(settings.context, 'app', 'assets', settings.jsType);
-    const store = require(path.join(assets, 'state', 'store'));
+    const createStore = require(path.join(assets, 'state', 'store'));
     try {
         let state = await global.redis.getAsync(req.session.id);
-        state = !!state ? JSON.parse(state) : store({});
+        state = !!state ? JSON.parse(state) : createStore({});
         return state;
     } catch(e) {
-        return store({});
+        return createStore({});
     }
 };
 
@@ -30,14 +30,14 @@ const getReactServerSideStorage = async (req) => {
     const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
     require('babel-register')(babelrc);
     const assets = path.join(settings.context, 'app', 'assets', settings.jsType);
-    const store = require(path.join(assets, 'redux', 'store'));
+    const createStore = require(path.join(assets, 'redux', 'store'));
 
     try {
         let state = await global.redis.getAsync(req.session.id);
-        state = !!state ? JSON.parse(state) : store({});
+        state = !!state ? JSON.parse(state) : createStore({});
         return state;
     } catch(e) {
-        return store({});
+        return createStore({});
     }
 };
 
@@ -45,13 +45,13 @@ const getJsServerSideStorage = async (req) => {
     const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
     require('babel-register')(babelrc);
     const assets = path.join(settings.context, 'app', 'assets', settings.jsType);
-    const store = require(path.join(assets, 'storage', 'store'));
+    const createStore = require(path.join(assets, 'storage', 'store'));
     try {
         let state = await global.redis.getAsync(req.session.id);
-        state = !!state ? JSON.parse(state) : store({});
+        state = !!state ? JSON.parse(state) : createStore({});
         return state;
     } catch(e) {
-        return store({});
+        return createStore({});
     }
 };
 
@@ -103,7 +103,7 @@ const serverSideOptions = {
 
                 try {
                     const serversideStorage = await getReactServerSideStorage(req);
-                    console.log(serversideStorage)
+
                     return {
                         serversideStorage: JSON.stringify(serversideStorage),
                         serversideString: getServersideString(Application, serversideStorage),
