@@ -9,23 +9,32 @@ const handleServerSide = (settings) => {
 }
 
 const getVueServerSideStorage = async (req) => {
-    const assets = path.join(settings.context, 'app', 'assets');
+    const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
+    require('babel-register')(babelrc);
+    const assets = path.join(settings.context, 'app', 'assets', settings.jsType);
     const store = require(path.join(assets, 'state', 'store'));
     try {
         let state = await global.redis.getAsync(req.session.id);
-        state = !!state ? JSON.parse(state) : store();
+        state = !!state ? JSON.parse(state) : store({});
         return state;
     } catch(e) {
         return {};
     }
 };
 
+const setServerSideCache = (req, data) => {
+    global.redis.set(req.session.id, JSON.stringify(data));
+}
+
 const getReactServerSideStorage = async (req) => {
-    const assets = path.join(settings.context, 'app', 'assets');
+    const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
+    require('babel-register')(babelrc);
+    const assets = path.join(settings.context, 'app', 'assets', settings.jsType);
     const store = require(path.join(assets, 'redux', 'store'));
+
     try {
         let state = await global.redis.getAsync(req.session.id);
-        state = !!state ? JSON.parse(state) : store();
+        state = !!state ? JSON.parse(state) : store({});
         return state;
     } catch(e) {
         return {};
@@ -33,11 +42,13 @@ const getReactServerSideStorage = async (req) => {
 };
 
 const getJsServerSideStorage = async (req) => {
-    const assets = path.join(settings.context, 'app', 'assets');
+    const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
+    require('babel-register')(babelrc);
+    const assets = path.join(settings.context, 'app', 'assets', settings.jsType);
     const store = require(path.join(assets, 'storage', 'store'));
     try {
         let state = await global.redis.getAsync(req.session.id);
-        state = !!state ? JSON.parse(state) : store();
+        state = !!state ? JSON.parse(state) : store({});
         return state;
     } catch(e) {
         return {};
@@ -46,9 +57,11 @@ const getJsServerSideStorage = async (req) => {
 
 const serverSideOptions = {
 
-        getServerSideStorage: getJsServerSideStorage,
-
         js: {
+
+            getServerSideStorage: getJsServerSideStorage,
+            setServerSideStorage: setServerSideCache,
+
             serverSide: async (pageName, req) => {
                 const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
                 require('babel-register')(babelrc);
@@ -56,7 +69,8 @@ const serverSideOptions = {
                     let storage = await getJsServerSideStorage(req);
                     return { serversideStorage: JSON.stringify(storage) };
                 } catch (e) {
-                    return { serversideStorage: JSON.stringify({}) };
+                    const store = require(path.join(assets, 'storage', 'store'))({});
+                    return { serversideStorage: JSON.stringify(store) };
                 }
             },
 
@@ -65,8 +79,7 @@ const serverSideOptions = {
                 require('babel-register')(babelrc);
                 const assets = path.join(settings.context, 'app', 'assets', settings.jsType);
                 const store = require(path.join(assets, 'storage', 'store'))({});
-                const storage = store.getState();
-                global.redis.set(req.session.id, JSON.stringify(storage));
+                setServerSideCache(req, store);
                 return storage;
             },
         },
@@ -74,12 +87,13 @@ const serverSideOptions = {
         jsx: {
 
             getServerSideStorage: getReactServerSideStorage,
+            setServerSideStorage: setServerSideCache,
 
             serverSide: async (pageName, req) => {
                 const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')))
                 require('babel-register')(babelrc);
                 const assets = path.join(settings.context, 'app', 'assets', settings.jsType);
-                const createStore = require(path.join(assets, 'redux', 'store'));
+
                 const componentArray = pageName.split('/');
                 componentArray.pop();
                 const componentPath = componentArray.join('/') + '/component';
@@ -88,19 +102,17 @@ const serverSideOptions = {
                 const getServersideString = handleServerSide(settings)();
 
                 try {
-                    let redux = await global.redis.getAsync(req.session.id);
-                    redux = !!redux ? JSON.parse(redux) : {};
-                    const store = createStore(redux);
-                    redux = redux || store.getState();
-
+                    const serversideStorage = await getReactServerSideStorage(req);
+                    console.log(serversideStorage)
                     return {
-                        serversideStorage: JSON.stringify(redux),
+                        serversideStorage: JSON.stringify(serversideStorage),
                         serversideString: getServersideString(Application, store),
                     };
                 } catch (e) {
+                    const createStore = require(path.join(assets, 'redux', 'store'));
                     const store = createStore({});
                     return {
-                        serversideStorage: JSON.stringify({}),
+                        serversideStorage: JSON.stringify(store),
                         serversideString: getServersideString(Application, store),
                     };
                 }
@@ -113,7 +125,7 @@ const serverSideOptions = {
                 const createStore = require(path.join(assets, 'redux', 'store'));
                 const store = createStore({});
                 const storage = store.getState();
-                global.redis.set(req.session.id, JSON.stringify(storage));
+                setServerSideCache(req, storage);
                 return storage;
             }
         },
@@ -121,6 +133,7 @@ const serverSideOptions = {
         vue: {
 
             getServerSideStorage: getVueServerSideStorage,
+            setServerSideStorage: setServerSideCache,
 
             serverSide: async (pageName, req) => {
                 const babelrc = JSON.parse(fs.readFileSync(path.join(settings.context, '.babelrc')));
@@ -135,15 +148,17 @@ const serverSideOptions = {
 
                 try {
                     const serversideString = await getServersideString(filePath, state);
-                    const serversideStorage = await getServerSideStorage(req);
+                    const serversideStorage = await getVueServerSideStorage(req);
 
                     return {
                         serversideStorage: JSON.stringify(serversideStorage),
                         serversideString: serversideString,
                     }
                 } catch(e) {
+                    const createStore = require(path.join(assets, 'state', 'store'));
+                    const store = createStore({});
                     return {
-                        serversideStorage: JSON.stringify({}),
+                        serversideStorage: JSON.stringify(store),
                         serversideString: '',
                     }
                 }
@@ -155,7 +170,7 @@ const serverSideOptions = {
                 const assets = path.join(settings.context, 'app', 'assets', settings.jsType);
                 const createStore = require(path.join(assets, 'state', 'store'));
                 const store = createStore({});
-                global.redis.set(req.session.id, store);
+                setServerSideCache(req, store);
                 return store;
             }
 
