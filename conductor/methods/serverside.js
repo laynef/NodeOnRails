@@ -35,9 +35,9 @@ const getReactServerSideStorage = async (req) => {
     try {
         let state = await global.redis.getAsync(req.session.id);
         state = !!state ? JSON.parse(state) : {};
-        return createStore(state).getState();
+        return createStore(state);
     } catch(e) {
-        return createStore({}).getState();
+        return createStore({});
     }
 };
 
@@ -105,14 +105,14 @@ const serverSideOptions = {
                     const serversideStorage = await getReactServerSideStorage(req);
 
                     return {
-                        serversideStorage: JSON.stringify(serversideStorage),
+                        serversideStorage: JSON.stringify(serversideStorage.getState()),
                         serversideString: getServersideString(Application, serversideStorage),
                     };
                 } catch (e) {
                     const createStore = require(path.join(assets, 'redux', 'store'));
                     const store = createStore({});
                     return {
-                        serversideStorage: JSON.stringify(store),
+                        serversideStorage: JSON.stringify(store.getState()),
                         serversideString: getServersideString(Application, store),
                     };
                 }
