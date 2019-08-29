@@ -35,9 +35,9 @@ const getReactServerSideStorage = async (req) => {
     try {
         let state = await global.redis.getAsync(req.session.id);
         state = !!state ? JSON.parse(state) : {};
-        return createStore(state);
+        return createStore(state).getState();
     } catch(e) {
-        return createStore({});
+        return createStore({}).getState();
     }
 };
 
