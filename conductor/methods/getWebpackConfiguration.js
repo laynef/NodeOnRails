@@ -1,16 +1,15 @@
-const fs = require('fs');
-const path = require('path');
-const webpack = require('webpack');
-const WriteFilePlugin = require('write-file-webpack-plugin');
-const TimeFixPlugin = require('time-fix-plugin');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { reduce, camelCase } = require('lodash');
-
-
 module.exports = {
 
     webpackConfiguration: (settings) => {
+        const fs = require('fs');
+        const path = require('path');
+        const webpack = require('webpack');
+        const WriteFilePlugin = require('write-file-webpack-plugin');
+        const TimeFixPlugin = require('time-fix-plugin');
+        const VueLoaderPlugin = require('vue-loader/lib/plugin');
+        const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+        const { reduce, camelCase } = require('lodash');
+
         const noProduction = process.env.NODE_ENV !== 'production';
         const { context, jsType, styleType, useBootstrapToggle } = settings;
 
