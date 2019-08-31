@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = {
 
-    createServiceWorker: (settings) => {
+    createServiceWorker: (settings, routes = []) => {
         let now = Date();
         now = now.replace(/\s/g, '');
         const root = settings.context;
@@ -38,7 +38,7 @@ module.exports = {
         const getImagePaths = fs.readdirSync(path.join(settings.context, 'app', 'assets', 'img')).map(e => `'/assets/img/${e}?id=${global.hashId}'`);
         const routesPath = routesDir(path.join(settings.context, 'app', 'assets', settings.jsType, 'pages'));
         const getDistPaths = distDir(path.join(settings.context, 'app', 'assets', 'dist'), routesPath);
-        const allFiles = getDistPaths.concat(getImagePaths);
+        const allFiles = routes.concat(getDistPaths).concat(getImagePaths);
         fs.writeFileSync(path.join(settings.context, 'app', 'assets', 'dist', 'sw.js'), `
 /* eslint-disable */
 // Version 0.6.2
