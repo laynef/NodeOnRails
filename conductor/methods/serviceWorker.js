@@ -37,8 +37,8 @@ module.exports = {
 
         const getImagePaths = fs.readdirSync(path.join(settings.context, 'app', 'assets', 'img')).map(e => `'/assets/img/${e}?id=${global.hashId}'`);
         const routesPath = routesDir(path.join(settings.context, 'app', 'assets', settings.jsType, 'pages'));
-        const getDistPaths = distDir(path.join(settings.context, 'app', 'assets', 'dist'), routesPath);
-        const allFiles = routes.concat(getDistPaths).concat(getImagePaths);
+        const getDistPaths = distDir(path.join(settings.context, 'app', 'assets', 'dist'));
+        const allFiles = routes.concat(getDistPaths).concat(getImagePaths).concat(routesPath);
         fs.writeFileSync(path.join(settings.context, 'app', 'assets', 'dist', 'sw.js'), `
 /* eslint-disable */
 // Version 0.6.2
