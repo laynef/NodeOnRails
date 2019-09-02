@@ -2,4 +2,5 @@
 CONTRIBUTORS.md
 temp
 *.rdb
+*.icloud
 .DS_Store
