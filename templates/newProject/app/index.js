@@ -41,12 +41,12 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 app.use(expressWinston.logger({
     transports: [
-      new winston.transports.Console(),
-      new winston.transports.File({ filename: logFile })
+        new winston.transports.Console(),
+        new winston.transports.File({ filename: logFile })
     ],
     format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple()
+        winston.format.colorize(),
+        winston.format.simple()
     ),
     meta: false,
     msg: "HTTP {{req.method}} {{req.url}} {{res.statusCode}} -- {{res.responseTime}}ms",
@@ -116,6 +116,7 @@ each(routeVersions, (versionDetails, apiVersion) => {
     if (process.env.NODE_ENV !== 'production') updateDocs(apiVersion);
     if (process.env.NODE_ENV !== 'production') app.get(`/docs/${apiVersion}`, documentationRoutes({ apiVersion, allRoutes }));
     app.use(`/api/${apiVersion}`, versionDetails[`${apiVersion}Router`]);
+    app.use(`/api/${apiVersion}/*`, (req, res) => { res.status(404).send({ error: "Not Found" }); });
 });
 
 app.getAsync('/', render('pages/index', { hashId: global.hashId }));
