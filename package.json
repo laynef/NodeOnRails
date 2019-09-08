@@ -1,7 +1,7 @@
 {
     "name": "nodejs-on-rails",
     "title": "Nodejs On Rails",
-    "version": "1.0.0-6",
+    "version": "1.0.0-7",
     "description": "",
     "scripts": {
         "new-command": "bash ./new-command.sh",
