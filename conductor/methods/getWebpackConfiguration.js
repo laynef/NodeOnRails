@@ -172,10 +172,6 @@ module.exports = {
                         use: [noProduction && !vueJs ? 'style-loader' : noProduction && vueJs ? 'vue-style-loader' : MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'less-loader'],
                     },
                     {
-                        test: /\.json$/,
-                        use: ['json-loader'],
-                    },
-                    {
                         test: /\.(png|woff|woff2|eot|ttf|svg|gif)$/,
                         loader: 'url-loader?name=[name].[ext]&limit=100000',
                     },
