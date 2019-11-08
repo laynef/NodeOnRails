@@ -48,7 +48,8 @@ const command = (routePath, options) => {
     const routePathDepth = routePath.split('/').map(e => '../').join('');
     const pugTitle = newTemplateAssets.replace(/include \.\/utils\/new-page\.pug/g, `include ${routePathDepth}utils/new-page.pug`);
     const scriptsPage = pugTitle.replace(/include \.\/utils\/scripts\.pug/g, `include ${routePathDepth}utils/scripts.pug`);
-    const newTemplate = scriptsPage.replace(/include \.\/utils\/meta\.pug/g, `include ${routePathDepth}utils/meta.pug`);
+    const cssPage = scriptsPage.replace(/include \.\/utils\/scripts\.pug/g, `include ${routePathDepth}utils/scripts.pug`);
+    const newTemplate = cssPage.replace(/\{cssPage\}/g, `${routePathDepth}../assets/dist/pages${routePath}/${pageName}`);
 
     const application = fs.readFileSync(path.join(root, 'app', 'index.js'), { encoding: 'utf8' });
     shell.exec(`mkdir -p ${path.join(root, 'app', 'views', 'pages', routePath)} ${path.join(root, 'app', 'assets', settings.styleType, 'pages', routePath)} ${path.join(root, 'app', 'assets', settings.jsType, 'pages', routePath)}`);
