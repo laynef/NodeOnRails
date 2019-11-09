@@ -4,8 +4,6 @@ const path = require('path');
 module.exports = {
 
     createServiceWorker: (settings, routes = []) => {
-        let now = Date();
-        now = now.replace(/\s/g, '');
         const root = settings.context;
         const appPath = path.join(root, 'app');
         const distDir = (pathname, data = []) => {

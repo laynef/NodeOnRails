@@ -1,7 +1,7 @@
 {
   "name": "rails-on-node-conductor",
   "title": "Rails On Node Conductor",
-  "version": "1.0.0-45",
+  "version": "1.0.0-46",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -42,7 +42,6 @@
     "lodash": "^4.17.15",
     "mini-css-extract-plugin": "^0.4.1",
     "node-sass": "^4.9.3",
-    "nodemailer": "^6.3.0",
     "postcss-import": "^12.0.0",
     "postcss-load-config": "^2.0.0",
     "postcss-loader": "^3.0.0",
