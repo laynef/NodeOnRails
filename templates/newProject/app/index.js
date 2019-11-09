@@ -128,9 +128,12 @@ app.use('*', (req, res) => {
 
 app.use((error, req, res, next) => {
     if (error) {
-        renderError(req, res, 'errors/500', { hashId: global.hashId, statusCode: 500, environment: process.env.NODE_ENV, title: '500: Internal Server Error' });
+        const isJSONResponse = req.headers['accept'] === 'applicaiton/json';
+        isJSONResponse ? res.status(500).send({ error }) : process.env.NODE_ENV === 'development' ?
+            res.status(500).render('errors/500development', { error, hashId: global.hashId, statusCode: 500 }) :
+            renderError(req, res, 'errors/500', { error, hashId: global.hashId, statusCode: 500, environment: process.env.NODE_ENV, title: '500: Internal Server Error' });
     }
-    next();
+    return next();
 });
 
 module.exports = app;
