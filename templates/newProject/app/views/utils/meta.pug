@@ -1,3 +1,5 @@
+base(href=`${hostName}`)
+
 meta(charset='utf-8')
 meta(http-equiv='X-UA-Compatible', content='IE=edge')
 meta(name='viewport', content='width=device-width, initial-scale=1')
@@ -32,14 +34,14 @@ meta(name='twitter:description' content=`${description}`)
 meta(name='twitter:image' content=`${hostName}${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
 meta(name='twitter:creator' content=`${twitterCreator}`)
 
-link(rel='apple-touch-icon' href=`${hostName}${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
-link(rel='apple-touch-startup-image' href=`${hostName}${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
+link(rel='apple-touch-icon' href=`${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
+link(rel='apple-touch-startup-image' href=`${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
 
-link(type='image/x-icon', rel='apple-touch-icon-precomposed', href=`${hostName}${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
-link(type='image/x-icon', rel='shortcut icon', href=`${hostName}${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
-link(type='image/x-icon', rel='icon', href=`${hostName}${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
+link(type='image/x-icon', rel='apple-touch-icon-precomposed', href=`${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
+link(type='image/x-icon', rel='shortcut icon', href=`${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
+link(type='image/x-icon', rel='icon', href=`${detailImage ? detailImage : '/assets/img/nodejs.png'}?id=${hashId}`)
 
-link(rel='canonical', href=`${host}`)
+link(rel='canonical', href=`${url}`)
 link(rel='manifest', href='/assets/manifest.json')
 
 meta(name="csrf-param", content="authenticity_token")

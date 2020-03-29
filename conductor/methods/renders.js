@@ -42,6 +42,7 @@ const globalRenders = (name, req, res, customs) => {
         name: pageName.split('').map((e, i) => i === 0 ? e.toUpperCase() : e.toLowerCase()).join(''),
         csrf: req.session.cookie.token,
         host: `${hostName}${req.url}`,
+        url: req.url,
         jsFiles: webpackHotReloads(res, files).js,
         cssFiles: webpackHotReloads(res, files).css,
         filePath: files,
@@ -68,8 +69,8 @@ module.exports = {
         const statusCode = customObject && customObject.statusCode ? customObject.statusCode : 200;
         const { serverSide } = renderServerSide(global.settings);
         const storage = await serverSide(pageName, req);
-        let requestObject = requestMethod(req, res);
-        requestObject = typeof requestObject === 'object' ? requestObject : {}
+        const makeRequest = requestMethod(req, res);
+        const requestObject = typeof makeRequest === 'object' ? makeRequest : {}
         res.status(statusCode).render(pageName, globalRenders(pageName, req, res, Object.assign({}, customObject, requestObject, storage)));
     },
 
@@ -77,8 +78,8 @@ module.exports = {
         const errorCode = customObject && customObject.statusCode ? customObject.statusCode : 400;
         const { serverSide } = renderServerSide(global.settings);
         const storage = await serverSide(`pages/${pageName}/${errorCode}`, req);
-        let requestObject = requestMethod(req, res);
-        requestObject = typeof requestObject === 'object' ? requestObject : {}
+        const makeRequest = requestMethod(req, res);
+        const requestObject = typeof makeRequest === 'object' ? makeRequest : {}
         res.status(errorCode).render(pageName, globalRenders(pageName, req, res, Object.assign({}, customObject, requestObject, storage)));
     },
 
