@@ -66,21 +66,27 @@ module.exports = {
     makeHash,
 
     render: (pageName, customObject = {}, requestMethod = () => ({})) => async (req, res) => {
-        const statusCode = customObject && customObject.statusCode ? customObject.statusCode : 200;
-        const { serverSide } = renderServerSide(global.settings);
-        const storage = await serverSide(pageName, req);
-        const makeRequest = requestMethod(req, res);
-        const requestObject = typeof makeRequest === 'object' ? makeRequest : {}
-        res.status(statusCode).render(pageName, globalRenders(pageName, req, res, Object.assign({}, customObject, requestObject, storage)));
+        try {
+            const { serverSide } = renderServerSide(global.settings);
+            const storage = await serverSide(pageName, req);
+            const makeRequest = requestMethod(req, res);
+            const requestObject = typeof makeRequest === 'object' ? makeRequest : {}
+            res.status(customObject && customObject.statusCode || 200).render(pageName, globalRenders(pageName, req, res, Object.assign({}, customObject, requestObject, storage)));
+        } catch (e) {
+            return e;
+        }
     },
 
     renderError: async (req, res, pageName, customObject = {}, requestMethod = () => ({})) => {
-        const errorCode = customObject && customObject.statusCode ? customObject.statusCode : 400;
-        const { serverSide } = renderServerSide(global.settings);
-        const storage = await serverSide(`pages/${pageName}/${errorCode}`, req);
-        const makeRequest = requestMethod(req, res);
-        const requestObject = typeof makeRequest === 'object' ? makeRequest : {}
-        res.status(errorCode).render(pageName, globalRenders(pageName, req, res, Object.assign({}, customObject, requestObject, storage)));
+        try {
+            const { serverSide } = renderServerSide(global.settings);
+            const storage = await serverSide(`pages/${pageName}/${errorCode}`, req);
+            const makeRequest = requestMethod(req, res);
+            const requestObject = typeof makeRequest === 'object' ? makeRequest : {}
+            res.status(customObject && customObject.statusCode || 400).render(pageName, globalRenders(pageName, req, res, Object.assign({}, customObject, requestObject, storage)));
+        } catch (e) {
+            return e;
+        }
     },
 
 };
